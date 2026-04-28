@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Salud · Juan Antonio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #0f1a14;
+  --bg2: #162010;
+  --surface: #1c2b1e;
+  --surface2: #243328;
+  --border: #2e4233;
+  --green: #4caf6e;
+  --green2: #6fcf8c;
+  --green-dim: #2d6644;
+  --gold: #c9a84c;
+  --gold-dim: #7a6030;
+  --text: #e8f0e9;
+  --text-dim: #8aaa90;
+  --text-muted: #4a6450;
+  --red: #e05c5c;
+  --red-dim: #3a1e1e;
+  --blue: #5b9bd5;
+  --blue-dim: #1a2d3a;
+  --orange: #d4854a;
+  --amber: #e8b96a;
+  --amber-dim: #3a2e18;
+  --ns-a: #1e8c3a;
+  --ns-b: #85c120;
+  --ns-fresh: #3a7fbf;
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  padding: 3.5rem 2rem 2.5rem;
+  text-align: center;
+  background: linear-gradient(160deg, #1a3322 0%, var(--bg) 70%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(76,175,110,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-leaf {
+  position: absolute;
+  font-size: 8rem;
+  opacity: 0.04;
+  pointer-events: none;
+}
+.hero-leaf:nth-child(1) { top: -20px; left: -30px; transform: rotate(-20deg); }
+.hero-leaf:nth-child(2) { top: -10px; right: -20px; transform: rotate(30deg); font-size: 6rem; }
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 700;
+  color: var(--green2);
+  letter-spacing: -0.01em;
+  position: relative;
+}
+.hero p {
+  margin-top: 0.5rem;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 300;
+  position: relative;
+}
+.hero .who {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-top: 0.4rem;
+  position: relative;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex-shrink: 0;
+  padding: 0.9rem 1.2rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.nav-btn:hover { color: var(--green2); }
+.nav-btn.active {
+  color: var(--green2);
+  border-bottom-color: var(--green);
+}
+
+/* SECTIONS */
+.section { display: none; padding: 1.5rem 1rem 3rem; max-width: 800px; margin: 0 auto; }
+.section.active { display: block; }
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--green2);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.subsection-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--green2);
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* PERFIL · stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.stat-card.red::before { background: var(--red); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.stat-card.red .stat-value { color: var(--red); }
+.stat-card.green .stat-value { color: var(--green2); }
+.stat-card.gold .stat-value { color: var(--gold); }
+.stat-card.blue .stat-value { color: var(--blue); }
+.stat-label { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.3rem; font-weight: 400; }
+
+.info-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+.info-block strong { color: var(--green2); font-weight: 600; }
+.info-block .highlight {
+  display: inline-block;
+  background: var(--green-dim);
+  color: var(--green2);
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* OBJETIVOS · progress bars */
+.prog-row { margin-bottom: 1rem; }
+.prog-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.prog-name { font-size: 0.82rem; color: var(--text-dim); }
+.prog-vals { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+.prog-track { background: var(--surface2); border-radius: 99px; height: 6px; width: 100%; overflow: hidden; }
+.prog-fill { height: 6px; border-radius: 99px; transition: width 0.6s ease; }
+
+/* MENÚ · day cards */
+.day-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.day-card:hover { border-color: var(--green-dim); }
+.day-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.9rem 1.2rem;
+  background: var(--surface2);
+  cursor: pointer;
+  user-select: none;
+}
+.day-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--green2);
+  flex: 1;
+}
+.day-chevron {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  transition: transform 0.2s;
+}
+.day-card.open .day-chevron { transform: rotate(180deg); }
+.day-body { display: none; padding: 1rem 1.2rem; }
+.day-card.open .day-body { display: block; }
+.meal-row {
+  display: flex;
+  gap: 0.7rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.meal-row:last-child { border-bottom: none; }
+.meal-time {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  min-width: 70px;
+  padding-top: 2px;
+}
+.meal-content { flex: 1; }
+.meal-name {
+  font-size: 0.9rem;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.meal-page {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+.meal-page span {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.68rem;
+}
+.meal-plus {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0.3rem 0 0.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.meal-plus::before { content: '＋'; color: var(--green-dim); }
+
+/* RECETAS */
+.recipe-grid { display: grid; gap: 0.8rem; }
+.recipe-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: border-color 0.2s, transform 0.1s;
+}
+.recipe-card:hover { border-color: var(--green-dim); transform: translateX(2px); }
+.recipe-emoji { font-size: 1.6rem; flex-shrink: 0; }
+.recipe-info { flex: 1; }
+.recipe-title { font-size: 0.9rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+.recipe-cat { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+.recipe-page {
+  flex-shrink: 0;
+  background: var(--green-dim);
+  color: var(--green2);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.recipe-page small { display: block; font-size: 0.55rem; font-family: 'Outfit', sans-serif; color: var(--green); font-weight: 400; letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* COMPRA */
+.shop-legend { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+.ns-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: white;
+}
+.ns-tag.a { background: var(--ns-a); }
+.ns-tag.b { background: var(--ns-b); color: #111; }
+.ns-tag.fresh { background: var(--ns-fresh); }
+.shop-cat { margin-bottom: 1.5rem; }
+.shop-cat-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.shop-item:hover { background: var(--surface2); }
+.shop-item.checked { opacity: 0.3; }
+.shop-item.checked .si-name { text-decoration: line-through; }
+.shop-checkbox {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 5px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  background: transparent;
+}
+.shop-item.checked .shop-checkbox { background: var(--green); border-color: var(--green); }
+.shop-checkbox::after { content: '✓'; color: white; font-size: 12px; font-weight: 800; display: none; }
+.shop-item.checked .shop-checkbox::after { display: block; }
+.si-info { flex: 1; }
+.si-name { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+.si-detail { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+.ns-pill {
+  padding: 0.12rem 0.45rem;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.ns-pill.a { background: rgba(30,140,58,0.25); color: #5de87c; border: 1px solid rgba(30,140,58,0.4); }
+.ns-pill.b { background: rgba(133,193,32,0.2); color: #a8d94a; border: 1px solid rgba(133,193,32,0.35); }
+.ns-pill.fresh { background: rgba(58,127,191,0.2); color: #7fb8e8; border: 1px solid rgba(58,127,191,0.35); font-size: 0.6rem; }
+.shop-progress {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.progress-bar-wrap { flex: 1; background: var(--surface2); border-radius: 99px; height: 8px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--green)); border-radius: 99px; transition: width 0.3s; }
+.progress-label { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; white-space: nowrap; }
+.btn-reset-shop {
+  display: block;
+  margin: 0 auto 1.5rem;
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 99px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-reset-shop:hover { border-color: var(--green-dim); color: var(--green2); }
+
+/* PELO/UÑAS · nutrient cards */
+.tip-grid { display: grid; gap: 0.8rem; margin-bottom: 1.5rem; }
+.tip-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.tip-card:hover { border-color: var(--gold-dim); }
+.tip-icon { font-size: 1.6rem; flex-shrink: 0; }
+.tip-content { flex: 1; }
+.tip-nutrient {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 0.2rem;
+}
+.tip-text { font-size: 0.83rem; color: var(--text-dim); line-height: 1.6; }
+.tip-text strong { color: var(--green2); }
+.tip-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  background: var(--gold-dim);
+  color: var(--gold);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* PELO/UÑAS · 100-day tracker */
+.unas-top { display: flex; align-items: center; gap: 12px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.unas-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .6rem .9rem; text-align: center; min-width: 70px; }
+.unas-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 700; color: var(--green2); line-height: 1.1; }
+.unas-stat-lbl { font-size: 10px; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+.unas-bar-wrap { flex: 1; min-width: 180px; }
+.unas-bar-bg { background: var(--surface2); border-radius: 100px; height: 8px; overflow: hidden; }
+.unas-bar-fg { height: 8px; border-radius: 100px; background: var(--green); transition: width .3s; }
+.unas-bar-pct { font-size: 11px; color: var(--text-dim); margin-top: 4px; text-align: right; }
+
+.phases { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.25rem; }
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem;
+  border-left: 3px solid var(--green);
+}
+.phase-card.p1 { border-left-color: var(--green); }
+.phase-card.p2 { border-left-color: var(--blue); }
+.phase-card.p3 { border-left-color: var(--gold); }
+.phase-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.phase-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.p1 .phase-dot { background: var(--green); }
+.p2 .phase-dot { background: var(--blue); }
+.p3 .phase-dot { background: var(--gold); }
+.phase-title { font-size: 12px; font-weight: 600; color: var(--text); }
+.phase-days { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+.phase-items { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.phase-items li { font-size: 11px; color: var(--text-dim); padding-left: 12px; position: relative; line-height: 1.4; }
+.phase-items li::before { content: ''; position: absolute; left: 0; top: 6px; width: 4px; height: 4px; border-radius: 50%; }
+.p1 .phase-items li::before { background: var(--green); }
+.p2 .phase-items li::before { background: var(--blue); }
+.p3 .phase-items li::before { background: var(--gold); }
+
+.unas-grid { display: grid; grid-template-columns: repeat(10,1fr); gap: 5px; margin-bottom: 1.25rem; }
+.unas-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 600;
+  color: var(--text-muted);
+  transition: transform .1s, background .15s;
+  user-select: none;
+  position: relative;
+}
+.unas-cell:hover { transform: scale(1.12); z-index: 2; }
+.unas-cell.done { border-color: transparent; color: #fff; }
+.unas-cell.today { box-shadow: 0 0 0 2px var(--green); }
+.unas-cell.p1.done { background: var(--green); }
+.unas-cell.p2.done { background: var(--blue); }
+.unas-cell.p3.done { background: var(--gold); }
+.unas-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: .75rem; }
+.unas-actions button {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.unas-actions button:hover { background: var(--surface2); }
+.unas-actions button.primary { background: var(--green); color: #0f1a14; border-color: var(--green); font-weight: 600; }
+.unas-actions button.primary:hover { background: var(--green2); }
+.unas-actions button:disabled { opacity: .45; cursor: default; }
+.streak-msg { font-size: 13px; color: var(--green2); font-weight: 500; min-height: 20px; }
+.tip-line { font-size: 12px; color: var(--text-dim); padding: .4rem 0; min-height: 20px; }
+
+/* SEGUIMIENTO PESO */
+.tracker-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.tracker-tab {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: 'Outfit', sans-serif;
+}
+.tracker-tab:hover { color: var(--text); }
+.tracker-tab.active { color: var(--green2); border-bottom-color: var(--green); }
+.tracker-panel { display: none; }
+.tracker-panel.active { display: block; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 1.2rem;
+}
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+}
+.field input, .field select, .field textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
+.field textarea { resize: vertical; min-height: 60px; }
+
+.btn {
+  background: var(--green);
+  color: #0f1a14;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s, background 0.15s;
+}
+.btn:hover { background: var(--green2); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:hover { border-color: var(--green); color: var(--green2); }
+
+.records-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+table.tracker-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+table.tracker-table thead tr { border-bottom: 1px solid var(--border); }
+table.tracker-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+table.tracker-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+table.tracker-table tr:last-child td { border-bottom: none; }
+.delta-pos { color: var(--green2); }
+.delta-neg { color: var(--red); }
+.delta-neu { color: var(--text-muted); }
+.empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.82rem; }
+
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+canvas { width: 100% !important; }
+
+.last-record {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* PLAN CARRERA */
+.plan-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+.plan-phase {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  border-left: 3px solid var(--text-muted);
+}
+.plan-phase.active-phase { border-left-color: var(--green); background: var(--surface2); }
+.plan-phase.done-phase { opacity: 0.5; }
+.plan-phase .ph-num { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.plan-phase .ph-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--green2); margin-bottom: 2px; }
+.plan-phase .ph-date { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 6px; }
+.plan-phase .ph-sub { font-size: 0.7rem; color: var(--text-muted); }
+
+.week-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.5rem; }
+.week-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.week-item:hover { border-color: var(--green-dim); }
+.week-item.done { border-color: var(--green-dim); background: rgba(76,175,110,0.08); }
+.week-check {
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: transparent;
+}
+.week-item.done .week-check { background: var(--green); border-color: var(--green); color: #0f1a14; }
+.week-info { flex: 1; }
+.wk-label { font-size: 0.85rem; color: var(--text); font-weight: 500; }
+.wk-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+.wk-current { color: var(--gold); font-size: 0.65rem; font-weight: 600; margin-left: 4px; }
+
+.hito-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.hito {
+  background: var(--surface);
+  padding: 1rem;
+}
+.hito-num { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.hito-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.hito-date { font-size: 0.7rem; color: var(--text-dim); }
+.hito-target { font-size: 0.7rem; color: var(--gold); margin-top: 6px; }
+.hito-target.success { color: var(--green2); }
+
+/* APUESTA */
+.apuesta-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; flex-wrap: wrap; }
+.slider-label { font-size: 0.82rem; color: var(--text-dim); min-width: 180px; flex-shrink: 0; }
+.slider-val { font-size: 0.85rem; font-weight: 600; min-width: 70px; text-align: right; color: var(--text); flex-shrink: 0; }
+input[type=range] {
+  flex: 1;
+  min-width: 100px;
+  accent-color: var(--green);
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.metric {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem;
+}
+.metric-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-val { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); }
+.apuesta-progress-wrap { margin-bottom: .5rem; }
+.apuesta-bar-bg { height: 14px; background: var(--surface2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+.apuesta-bar-fill { height: 100%; border-radius: 99px; transition: width .3s, background .3s; }
+.apuesta-progress-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-top: 6px; }
+.status-msg {
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 500;
+  padding: .8rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+}
+.status-safe { background: rgba(76,175,110,0.15); color: var(--green2); border: 1px solid var(--green-dim); }
+.status-warn { background: rgba(232,185,106,0.12); color: var(--amber); border: 1px solid var(--amber-dim); }
+.status-danger { background: rgba(224,92,92,0.12); color: var(--red); border: 1px solid var(--red-dim); }
+.date-row { display: flex; align-items: center; gap: 10px; margin-top: 1rem; flex-wrap: wrap; }
+.date-row input[type=date] {
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  color-scheme: dark;
+}
+.add-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: .65rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  background: var(--green);
+  border: 1px solid var(--green);
+  color: #0f1a14;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.15s;
+}
+.add-btn:hover { background: var(--green2); }
+.history-empty { font-size: 0.82rem; color: var(--text-muted); text-align: center; padding: 1rem 0; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.badge-ok { background: rgba(76,175,110,0.18); color: var(--green2); }
+.badge-fail { background: rgba(224,92,92,0.15); color: var(--red); }
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0 0;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.totals-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+.totals-val { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.clear-btn {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+.clear-btn:hover { color: var(--text); }
+
+/* CONSEJOS */
+.advice-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.4rem;
+  margin-bottom: 1rem;
+}
+.advice-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green2);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.advice-body { font-size: 0.85rem; color: var(--text-dim); line-height: 1.75; }
+.advice-body strong { color: var(--text); font-weight: 600; }
+.advice-body ul { padding-left: 1.2rem; margin-top: 0.4rem; }
+.advice-body li { margin-bottom: 0.25rem; }
+.calorie-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  margin-top: 0.8rem;
+}
+.calorie-table th {
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.calorie-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(46,66,51,0.5);
+  color: var(--text-dim);
+}
+.calorie-table td:last-child { color: var(--green2); font-weight: 600; }
+.calorie-table tr:last-child td { border-bottom: none; color: var(--text); font-weight: 600; }
+.calorie-table tr:last-child td:last-child { color: var(--gold); }
+
+.section-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .phases, .plan-phases, .hito-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr 1fr; }
+  .hero { padding: 2.5rem 1rem 2rem; }
+  .section { padding: 1rem 0.8rem 3rem; }
+  .meal-time { min-width: 60px; font-size: 0.65rem; }
+  .slider-label { min-width: 100%; }
+  .metrics { grid-template-columns: 1fr; }
+  .unas-grid { grid-template-columns: repeat(7, 1fr); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section.active > * { animation: fadeUp 0.35s ease both; }
+.section.active > *:nth-child(2) { animation-delay: 0.04s; }
+.section.active > *:nth-child(3) { animation-delay: 0.08s; }
+.section.active > *:nth-child(4) { animation-delay: 0.12s; }
+.section.active > *:nth-child(5) { animation-delay: 0.16s; }
+
+/* ════════ GASTOS ════════ */
+.gastos-tabs { display: flex; gap: 4px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.gastos-tab {
+  padding: 7px 18px; border-radius: 6px; font-size: 0.82rem;
+  font-family: 'Outfit', sans-serif; cursor: pointer;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); transition: all 0.2s;
+}
+.gastos-tab:hover { color: var(--text); }
+.gastos-tab.active { background: var(--bg2); color: var(--green2); border-color: var(--green-dim); font-weight: 500; }
+.gastos-panel { display: none; }
+.gastos-panel.active { display: block; }
+.g-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.g-mcards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.g-mcard { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+.g-mcard-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.g-mcard-val { font-size: 1.3rem; font-weight: 500; color: var(--text); font-family: 'Cormorant Garamond', serif; }
+.g-mcard-val.pos { color: #6fcf8c; }
+.g-mcard-val.neg { color: #e07a5f; }
+.g-mcard-val.neu { color: var(--gold); }
+.g-sec-title { font-size: 0.72rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.g-entry-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.g-entry-row:last-child { border-bottom: none; }
+.g-entry-cat { font-size: 0.7rem; color: var(--gold); width: 100px; text-transform: uppercase; letter-spacing: 0.03em; flex-shrink: 0; }
+.g-entry-desc { flex: 1; font-size: 0.88rem; color: var(--text); min-width: 0; word-break: break-word; }
+.g-entry-amt { font-size: 0.92rem; font-weight: 500; color: var(--text); width: 75px; text-align: right; font-family: 'Cormorant Garamond', serif; flex-shrink: 0; }
+.g-entry-del { font-size: 1rem; cursor: pointer; color: var(--text-muted); padding: 0 6px; background: none; border: none; line-height: 1; flex-shrink: 0; }
+.g-entry-del:hover { color: #e07a5f; }
+.g-add-row { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.g-add-row input, .g-add-row select {
+  font-size: 0.85rem; font-family: 'Outfit', sans-serif; padding: 7px 10px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 5px; color: var(--text);
+}
+.g-add-row input[type=text] { flex: 1; min-width: 140px; }
+.g-add-row input[type=number] { width: 90px; }
+.g-add-btn {
+  font-size: 0.82rem; padding: 0 16px; background: var(--green-dim); color: var(--text);
+  border: 1px solid var(--green-dim); border-radius: 5px; cursor: pointer; font-family: 'Outfit', sans-serif;
+}
+.g-add-btn:hover { background: var(--green); border-color: var(--green); }
+.g-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+.g-badge-ok { background: rgba(76, 175, 110, 0.18); color: #6fcf8c; }
+.g-badge-warn { background: rgba(201, 168, 76, 0.18); color: var(--gold); }
+.g-badge-over { background: rgba(224, 122, 95, 0.18); color: #e07a5f; }
+.g-prog-bg { background: var(--bg); border-radius: 4px; height: 6px; overflow: hidden; margin-top: 5px; }
+.g-prog-fill { height: 6px; border-radius: 4px; transition: width 0.3s; }
+.g-prog-ok { background: var(--green); }
+.g-prog-warn { background: var(--gold); }
+.g-prog-over { background: #e07a5f; }
+.g-cat-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); }
+.g-cat-row:last-child { border-bottom: none; }
+.g-overview-month { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--bg2); margin-bottom: 8px; }
+.g-ov-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.g-ov-label { font-size: 1.05rem; font-weight: 500; color: var(--green2); font-family: 'Cormorant Garamond', serif; }
+.g-cfg-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.g-cfg-row:last-child { border-bottom: none; }
+.g-cfg-label { flex: 1; font-size: 0.9rem; color: var(--text); }
+.g-cfg-input {
+  width: 130px; font-size: 0.9rem; text-align: right; padding: 7px 10px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-family: 'Outfit', sans-serif;
+}
+.g-grid-2 { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 720px) {
+  .g-grid-2 { grid-template-columns: 1fr; }
+  .g-mcards { grid-template-columns: repeat(2, 1fr); }
+  .g-entry-cat { width: 80px; font-size: 0.65rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-leaf">🌿</div>
+  <div class="hero-leaf">🍃</div>
+  <h1>Plan de Salud Integral</h1>
+  <p class="who">Juan Antonio Arenas</p>
+  <p>Dieta · Menú · Compra · Seguimiento · Carrera · Pelo & Uñas · Apuesta</p>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="show('perfil',this)">👤 Perfil</button>
+  <button class="nav-btn" onclick="show('menu',this)">📅 Menú</button>
+  <button class="nav-btn" onclick="show('peso',this)">⚖️ Peso</button>
+  <button class="nav-btn" onclick="show('carrera',this)">🏃 Carrera</button>
+  <button class="nav-btn" onclick="show('pelo',this)">💇 Pelo & Uñas</button>
+  <button class="nav-btn" onclick="show('apuesta',this)">🎯 Apuesta</button>
+  <button class="nav-btn" onclick="show('gastos',this)">💸 Gastos</button>
+  <button class="nav-btn" onclick="show('consejos',this)">💡 Consejos</button>
+  <span id="sync-dot" title="Sincronización" style="font-size:0.65rem;margin-left:4px;color:var(--text-muted);cursor:default;transition:color 0.4s;align-self:center;">●</span>
+</nav>
+
+<!-- ══════════════════════ PERFIL ══════════════════════ -->
+<section class="section active" id="perfil">
+  <div class="section-title">👤 Perfil Corporal</div>
+
+  <div class="info-block" style="margin-bottom:1.2rem; font-size:0.82rem;">
+    Datos iniciales · 27 abril 2026
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card red">
+      <div class="stat-value">100.3<small style="font-size:0.7rem">kg</small></div>
+      <div class="stat-label">Peso actual</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-value">31.0</div>
+      <div class="stat-label">IMC · Obesidad I</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-value">27<small style="font-size:0.7rem">%</small></div>
+      <div class="stat-label">Grasa corporal</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-value">109<small style="font-size:0.7rem">cm</small></div>
+      <div class="stat-label">Cintura</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">73.2<small style="font-size:0.7rem">kg</small></div>
+      <div class="stat-label">Peso sin grasa</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">69.6<small style="font-size:0.7rem">kg</small></div>
+      <div class="stat-label">Masa muscular</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">16.7<small style="font-size:0.7rem">%</small></div>
+      <div class="stat-label">Proteína</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-value">23.1<small style="font-size:0.7rem">%</small></div>
+      <div class="stat-label">Grasa subcutánea</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-value">13</div>
+      <div class="stat-label">Grasa visceral</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-value">1951<small style="font-size:0.7rem">kcal</small></div>
+      <div class="stat-label">BMR (metabolismo)</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-value">52.7<small style="font-size:0.7rem">%</small></div>
+      <div class="stat-label">Agua corporal</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-value">32<small style="font-size:0.7rem">a</small></div>
+      <div class="stat-label">Edad metabólica</div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <strong>💪 Punto fuerte:</strong> Tienes una <span class="highlight">masa muscular excelente de 69,6 kg</span> — es tu mayor activo. El plan prioriza proteína en cada comida para preservarla mientras pierdes grasa.<br><br>
+    <strong>⚠️ Punto a mejorar:</strong> La grasa visceral de <strong>13</strong> y la cintura de <strong>109 cm</strong> son los datos más importantes a reducir — la visceral rodea los órganos y afecta más a la salud cardiovascular y metabólica. Con este plan y ejercicio debería bajar en las primeras semanas.
+  </div>
+
+  <div class="info-block">
+    <strong>🧬 Edad metabólica:</strong> 32 años. Si tu edad real es mayor, ¡enhorabuena! Tu metabolismo está en buen estado. Mantén la masa muscular con ejercicio de fuerza y seguirá así.
+  </div>
+
+  <div class="subsection-title">🎯 Objetivos a 3 meses</div>
+
+  <div class="info-block" style="margin-bottom:1.2rem;">
+    <strong>Objetivo principal:</strong> Perder <span class="highlight">mínimo 0,5 kg/semana</span><br>
+    Para lograrlo necesitas un déficit de <strong>~500 kcal/día</strong>. Con tu BMR de 1.951 kcal y ejercicio regular, la ingesta objetivo es de <span class="highlight">1.400–1.600 kcal/día</span>.
+  </div>
+
+  <div class="prog-row">
+    <div class="prog-header">
+      <span class="prog-name">Peso</span>
+      <span class="prog-vals" id="prog-peso-val">100.3 → 93–95 kg</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-peso" style="width:0%; background:var(--green);"></div></div>
+  </div>
+  <div class="prog-row">
+    <div class="prog-header">
+      <span class="prog-name">Cintura</span>
+      <span class="prog-vals" id="prog-cintura-val">109 → 100 cm</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-cintura" style="width:0%; background:var(--blue);"></div></div>
+  </div>
+  <div class="prog-row">
+    <div class="prog-header">
+      <span class="prog-name">Grasa corporal</span>
+      <span class="prog-vals" id="prog-grasa-val">27% → 22%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-grasa" style="width:0%; background:var(--amber);"></div></div>
+  </div>
+  <div class="prog-row">
+    <div class="prog-header">
+      <span class="prog-name">Semanas plan carrera completadas</span>
+      <span class="prog-vals" id="prog-semanas-val">0 / 12</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-semanas" style="width:0%; background:var(--gold);"></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════ MENÚ ══════════════════════ -->
+<section class="section" id="menu">
+  <div class="section-title">📅 Menú Semanal</div>
+
+  <div class="info-block" style="margin-bottom:1.2rem; font-size:0.82rem;">
+    Toca cada día para ver el detalle. <strong style="color:var(--gold)">p.XX</strong> = número de página en el libro <em>«Recetas sencillas para novatos y cocinillas»</em>.
+  </div>
+
+  <!-- LUNES -->
+  <div class="day-card open" id="day-0">
+    <div class="day-header" onclick="toggleDay('day-0')">
+      <span style="font-size:1.2rem">🌱</span>
+      <span class="day-name">Lunes</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada integral con tomate y AOVE + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Manzana + 10–12 almendras crudas</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Crema de calabacín</div>
+          <div class="meal-page"><span>p. 113</span></div>
+          <div class="meal-plus">Merluza en salsa verde</div>
+          <div class="meal-page"><span>p. 510</span></div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Yogur natural sin azúcar</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Tortilla francesa + tomate en rodajas</div>
+          <div class="meal-page"><span>p. 380</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARTES -->
+  <div class="day-card" id="day-1">
+    <div class="day-header" onclick="toggleDay('day-1')">
+      <span style="font-size:1.2rem">🌿</span>
+      <span class="day-name">Martes</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con aguacate + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Pera + 2–3 nueces de Brasil (selenio 💇)</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Lentejas guisadas (plato único)</div>
+          <div class="meal-page"><span>p. 129</span> · Con zumo de naranja para absorber el hierro</div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Fruta de temporada + infusión</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Revuelto de espárragos trigueros</div>
+          <div class="meal-page"><span>p. 388</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MIÉRCOLES -->
+  <div class="day-card" id="day-2">
+    <div class="day-header" onclick="toggleDay('day-2')">
+      <span style="font-size:1.2rem">🐟</span>
+      <span class="day-name">Miércoles</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con queso fresco + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Yogur natural + puñado de nueces (omega-3 💇)</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Ensalada de salmón con espinacas</div>
+          <div class="meal-page"><span>p. 70</span></div>
+          <div class="meal-plus">Lubina con vainas</div>
+          <div class="meal-page"><span>p. 507</span></div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Manzana</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Ensalada de endibias con salmón ahumado</div>
+          <div class="meal-page"><span>p. 73</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JUEVES -->
+  <div class="day-card" id="day-3">
+    <div class="day-header" onclick="toggleDay('day-3')">
+      <span style="font-size:1.2rem">🫘</span>
+      <span class="day-name">Jueves</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con tomate y AOVE + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Plátano + 2–3 nueces de Brasil</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Garbanzos con bacalao y acelgas (plato único)</div>
+          <div class="meal-page"><span>p. 131</span> · ⚠️ Poner garbanzos a remojo el miércoles noche</div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Yogur natural sin azúcar</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Tortilla de espinacas</div>
+          <div class="meal-page"><span>p. 385</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIERNES -->
+  <div class="day-card" id="day-4">
+    <div class="day-header" onclick="toggleDay('day-4')">
+      <span style="font-size:1.2rem">🐠</span>
+      <span class="day-name">Viernes</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con aguacate + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Pera + almendras crudas</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Crema de puerros</div>
+          <div class="meal-page"><span>p. 119</span></div>
+          <div class="meal-plus">Dorada a la sal</div>
+          <div class="meal-page"><span>p. 497</span></div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Yogur natural + nueces</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Ensalada de tomate con atún en conserva</div>
+          <div class="meal-page"><span>p. 52</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SÁBADO -->
+  <div class="day-card" id="day-5">
+    <div class="day-header" onclick="toggleDay('day-5')">
+      <span style="font-size:1.2rem">🌾</span>
+      <span class="day-name">Sábado</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con tomate y AOVE + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Fruta variada + 2–3 nueces de Brasil</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Arroz con verduras (plato único)</div>
+          <div class="meal-page"><span>p. 178</span></div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Yogur natural</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content">
+          <div class="meal-name">Revuelto de calabacines</div>
+          <div class="meal-page"><span>p. 387</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMINGO -->
+  <div class="day-card" id="day-6">
+    <div class="day-header" onclick="toggleDay('day-6')">
+      <span style="font-size:1.2rem">🍅</span>
+      <span class="day-name">Domingo</span>
+      <span class="day-chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="meal-row">
+        <div class="meal-time">☀️ Desayuno</div>
+        <div class="meal-content"><div class="meal-name">Café con leche + tostada con aguacate + zumo de naranja</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍎 Tentempié</div>
+        <div class="meal-content"><div class="meal-name">Fruta + almendras crudas</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍽️ Comida</div>
+        <div class="meal-content">
+          <div class="meal-name">Gazpacho (plato único o entrante)</div>
+          <div class="meal-page"><span>p. 101</span> · + proteína libre (pollo a la plancha, pavo…)</div>
+        </div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🍊 Merienda</div>
+        <div class="meal-content"><div class="meal-name">Yogur + nueces</div></div>
+      </div>
+      <div class="meal-row">
+        <div class="meal-time">🌙 Cena</div>
+        <div class="meal-content"><div class="meal-name">Libre / restos de semana / huevos revueltos</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── LISTA DE LA COMPRA ─── -->
+  <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);"></div>
+  <div class="section-title" style="font-size:1.5rem;margin-top:0;">🛒 Lista de la compra · Mercadona</div>
+
+  <div class="shop-legend">
+    <span class="ns-tag a">🅰 Nutriscore A — Muy alto</span>
+    <span class="ns-tag b">🅱 Nutriscore B — Alto</span>
+    <span class="ns-tag fresh">🐟 Fresco (equiv. A)</span>
+  </div>
+
+  <div class="shop-progress">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:0%"></div></div>
+    <div class="progress-label" id="prog-label">0 / 0 artículos</div>
+  </div>
+
+  <button class="btn-reset-shop" onclick="resetShop()">↺ Desmarcar todo</button>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">🐟 Pescados y Mariscos</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Merluza en lomos fresca — pescadería</div><div class="si-detail">~500 g · lunes (salsa verde)</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Lubina fresca o lomos — pescadería</div><div class="si-detail">~500 g · miércoles (con vainas)</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Dorada entera fresca — pescadería</div><div class="si-detail">1 ud ~800 g–1 kg · viernes (a la sal)</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Bacalao desalado en lomos — Hacendado</div><div class="si-detail">~300 g · jueves (garbanzos con bacalao)</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Salmón ahumado — Hacendado</div><div class="si-detail">2 sobres ~150 g · miérc. ensalada + endibias</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Atún claro al natural — Hacendado</div><div class="si-detail">Pack 3 latas · viernes cena</div></div><span class="ns-pill a">A</span></div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">🥦 Verduras y Hortalizas</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Calabacín</div><div class="si-detail">3–4 uds · lunes crema + sáb. revuelto</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Puerros</div><div class="si-detail">4–5 uds · viernes crema + sáb. arroz</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Patatas</div><div class="si-detail">~700 g · cremas</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Espinacas en bolsa — Hacendado</div><div class="si-detail">1 bolsa 300 g · miérc. ensalada + jueves tortilla</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Acelgas frescas</div><div class="si-detail">1 manojo · jueves garbanzos bacalao</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Espárragos trigueros — frescos o congelados Hacendado</div><div class="si-detail">1 manojo o bolsa · martes revuelto</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Judías verdes congeladas — Hacendado</div><div class="si-detail">Bolsa 1 kg · miérc. lubina + sáb. arroz</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Endibias</div><div class="si-detail">4 uds · miérc. cena</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Tomates maduros (pera o rama)</div><div class="si-detail">2 kg · gazpacho + ensaladas</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Cebolla y cebolleta</div><div class="si-detail">4 cebollas + 2 cebolletas</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Pimientos verde y rojo</div><div class="si-detail">2 verdes + 1 rojo</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Pepino + lechuga</div><div class="si-detail">1 pepino + 1 lechuga · gazpacho + ensalada salmón</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Ajo (cabeza)</div><div class="si-detail">1 cabeza</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">🫘 Legumbres y Cereales</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Lentejas pardinas secas — Hacendado</div><div class="si-detail">Bolsa 500 g · martes</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Garbanzos secos — Hacendado</div><div class="si-detail">Bolsa 500 g · jueves (⚠️ remojo miérc. noche)</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Arroz largo — Hacendado</div><div class="si-detail">Bolsa 1 kg · sábado</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Pan integral de molde — Hacendado</div><div class="si-detail">Sin azúcares añadidos · desayunos + gazpacho</div></div><span class="ns-pill b">B</span></div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">🥚 Lácteos y Huevos</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Huevos camperos L — Hacendado</div><div class="si-detail">Docena · tortillas + revueltos toda la semana</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Yogur natural sin azúcar — Hacendado</div><div class="si-detail">Pack 8 uds · meriendas</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Leche semidesnatada — Hacendado</div><div class="si-detail">2 litros · café + tortilla espinacas</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Nata para cocinar ligera — Hacendado</div><div class="si-detail">Brik 200 ml · cremas + revueltos</div></div><span class="ns-pill b">B</span></div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">🫙 Aceites, Especias y Condimentos</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">AOVE — Hacendado</div><div class="si-detail">Botella 750 ml o 1 l</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Sal gorda marina — Hacendado</div><div class="si-detail">2 kg · dorada a la sal necesita mucha</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Vinagre de Jerez — Hacendado</div><div class="si-detail">Botella 500 ml · aderezos y gazpacho</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Mostaza Dijon o antigua — Hacendado</div><div class="si-detail">1 bote · vinagreta ensalada salmón</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Salsa de soja — Hacendado</div><div class="si-detail">Botella · vinagreta ensalada salmón</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Pepinillos en vinagre — Hacendado</div><div class="si-detail">1 tarro · ensalada endibias salmón</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Perejil fresco o congelado — Hacendado</div><div class="si-detail">1 manojo o bolsa congelada</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Harina de trigo — Hacendado</div><div class="si-detail">1 kg · poca cantidad para merluza en salsa verde</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Jamón serrano en taquitos — Hacendado</div><div class="si-detail">Sobre 100 g · jueves tortilla espinacas</div></div><span class="ns-pill b">B</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Limones</div><div class="si-detail">2 uds · aderezos varios</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+  </div>
+
+  <div class="shop-cat">
+    <div class="shop-cat-title">☕ Desayunos, Tentempiés y Meriendas</div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Naranjas de zumo</div><div class="si-detail">2 kg · zumo del desayuno cada día</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Fruta variada de temporada</div><div class="si-detail">Manzanas, peras, plátanos · tentempiés + meriendas</div></div><span class="ns-pill fresh">🐟 Fresco</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Aguacates</div><div class="si-detail">2–3 uds · tostadas desayuno</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Almendras crudas sin sal — Hacendado</div><div class="si-detail">Bolsa 200 g · tentempié media mañana</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Nueces peladas sin sal — Hacendado</div><div class="si-detail">Bolsa 200 g · omega-3 para el pelo 💇</div></div><span class="ns-pill a">A</span></div>
+    <div class="shop-item" onclick="toggleShop(this)"><div class="shop-checkbox"></div><div class="si-info"><div class="si-name">Nueces de Brasil — frutos secos</div><div class="si-detail">Pequeño paquete · 2–3 al día = selenio completo 💇💅</div></div><span class="ns-pill a">A</span></div>
+  </div>
+
+  <div class="info-block" style="font-size:0.8rem;">
+    ⚠️ <strong>Recuerda:</strong> Los garbanzos se ponen a remojo el <strong>miércoles por la noche</strong> para cocinarlos el jueves. El bacalao desalado ya viene listo; si coges en salazón necesita 48 h de remojo cambiando el agua cada 8 h.
+  </div>
+</section>
+
+<!-- ══════════════════════ PESO ══════════════════════ -->
+<section class="section" id="peso">
+  <div class="section-title">⚖️ Seguimiento de Peso</div>
+
+  <div class="tracker-tabs">
+    <button class="tracker-tab active" onclick="showTrackerTab('resumen', this)">Resumen</button>
+    <button class="tracker-tab" onclick="showTrackerTab('registro', this)">Registrar</button>
+    <button class="tracker-tab" onclick="showTrackerTab('historial', this)">Historial</button>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="tracker-panel active" id="tracker-resumen">
+    <div class="subsection-title" style="margin-top:0;">Último registro</div>
+    <div id="ultimo-registro" class="last-record">
+      <div style="color:var(--text-muted);font-size:0.82rem;">Aún no hay registros. Ve a "Registrar" para añadir el primero.</div>
+    </div>
+
+    <div class="subsection-title">Gráfica de peso</div>
+    <div class="chart-wrap">
+      <canvas id="chartPeso" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- REGISTRO -->
+  <div class="tracker-panel" id="tracker-registro">
+    <div class="subsection-title" style="margin-top:0;">Nuevo registro de peso (semanal)</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" id="r-fecha" style="color-scheme:dark;">
+      </div>
+      <div class="field">
+        <label>Peso (kg)</label>
+        <input type="number" id="r-peso" step="0.1" placeholder="ej. 99.5">
+      </div>
+      <div class="field">
+        <label>Bienestar general</label>
+        <select id="r-bienestar">
+          <option value="">— selecciona —</option>
+          <option value="3">Bien</option>
+          <option value="2">Regular</option>
+          <option value="1">Mal</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column: 1/-1;">
+        <label>Notas</label>
+        <textarea id="r-notas" placeholder="Cómo fue la semana, sensaciones..."></textarea>
+      </div>
+    </div>
+    <button class="btn" onclick="guardarPeso()">Guardar peso</button>
+
+    <div class="subsection-title">Medición mensual (cada 4 semanas)</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Fecha medición</label>
+        <input type="date" id="m-fecha" style="color-scheme:dark;">
+      </div>
+      <div class="field">
+        <label>Cintura (cm)</label>
+        <input type="number" id="m-cintura" step="0.5" placeholder="109">
+      </div>
+      <div class="field">
+        <label>Caderas (cm)</label>
+        <input type="number" id="m-caderas" step="0.5" placeholder="109.5">
+      </div>
+      <div class="field">
+        <label>Pecho (cm)</label>
+        <input type="number" id="m-pecho" step="0.5" placeholder="114">
+      </div>
+      <div class="field">
+        <label>Brazo (cm)</label>
+        <input type="number" id="m-brazo" step="0.5" placeholder="31">
+      </div>
+      <div class="field">
+        <label>Muslo (cm)</label>
+        <input type="number" id="m-muslo" step="0.5" placeholder="63.5">
+      </div>
+      <div class="field">
+        <label>Pantorrilla (cm)</label>
+        <input type="number" id="m-pantorrilla" step="0.5" placeholder="41">
+      </div>
+      <div class="field">
+        <label>Grasa corporal (%)</label>
+        <input type="number" id="m-grasa" step="0.1" placeholder="27.0">
+      </div>
+      <div class="field">
+        <label>Grasa visceral</label>
+        <input type="number" id="m-visceral" step="1" placeholder="13">
+      </div>
+      <div class="field">
+        <label>Masa muscular (kg)</label>
+        <input type="number" id="m-musculo" step="0.1" placeholder="69.6">
+      </div>
+    </div>
+    <button class="btn" onclick="guardarMedicion()">Guardar medición</button>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="tracker-panel" id="tracker-historial">
+    <div class="subsection-title" style="margin-top:0;">Registros de peso</div>
+    <div class="records-wrap">
+      <table class="tracker-table" id="tabla-pesos">
+        <thead><tr><th>Fecha</th><th>Peso</th><th>Δ anterior</th><th>Δ inicio</th><th>Estado</th><th>Notas</th><th></th></tr></thead>
+        <tbody id="tbody-pesos"><tr><td colspan="7"><div class="empty-state">Sin registros aún</div></td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="subsection-title">Mediciones mensuales</div>
+    <div class="records-wrap">
+      <table class="tracker-table" id="tabla-mediciones">
+        <thead><tr><th>Fecha</th><th>Cintura</th><th>Caderas</th><th>Grasa%</th><th>Visceral</th><th>Músculo</th><th></th></tr></thead>
+        <tbody id="tbody-mediciones"><tr><td colspan="7"><div class="empty-state">Sin mediciones aún</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ CARRERA ══════════════════════ -->
+<section class="section" id="carrera">
+  <div class="section-title">🏃 Plan de Carrera 12 semanas</div>
+
+  <div class="info-block" style="margin-bottom:1.2rem; font-size:0.85rem;">
+    <strong>Mayo – Julio 2026.</strong> Plan progresivo de andar a correr 30 min continuos. Complementa con <strong>2 días de fuerza/semana</strong> para preservar masa muscular.
+  </div>
+
+  <div class="plan-phases">
+    <div class="plan-phase" id="phase-1">
+      <div class="ph-num">Fase 1</div>
+      <div class="ph-name">Adaptación</div>
+      <div class="ph-date">4 may – 31 may</div>
+      <div class="ph-sub">Solo caminar · 3–4 días/sem</div>
+    </div>
+    <div class="plan-phase" id="phase-2">
+      <div class="ph-num">Fase 2</div>
+      <div class="ph-name">Progresión</div>
+      <div class="ph-date">1 jun – 28 jun</div>
+      <div class="ph-sub">Run/Walk · 4 días/sem</div>
+    </div>
+    <div class="plan-phase" id="phase-3">
+      <div class="ph-num">Fase 3</div>
+      <div class="ph-name">Carrera</div>
+      <div class="ph-date">29 jun – 27 jul</div>
+      <div class="ph-sub">30 min continuo · 4 días/sem</div>
+    </div>
+  </div>
+
+  <div class="subsection-title">Semanas · marca cada una al completarla</div>
+  <div class="week-list" id="week-list"></div>
+
+  <div class="subsection-title">Hitos de medición</div>
+  <div class="hito-grid">
+    <div class="hito">
+      <div class="hito-num">Hito 1</div>
+      <div class="hito-name">Fin mayo</div>
+      <div class="hito-date">~31 mayo</div>
+      <div class="hito-target">Cintura –2 cm · Peso –1 kg</div>
+    </div>
+    <div class="hito">
+      <div class="hito-num">Hito 2</div>
+      <div class="hito-name">Fin junio</div>
+      <div class="hito-date">~28 junio</div>
+      <div class="hito-target">Cintura –5 cm · Peso –3 kg</div>
+    </div>
+    <div class="hito">
+      <div class="hito-num">Hito 3</div>
+      <div class="hito-name">Fin julio</div>
+      <div class="hito-date">~27 julio</div>
+      <div class="hito-target success">Correr 30 min · Grasa ~22%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ PELO Y UÑAS ══════════════════════ -->
+<section class="section" id="pelo">
+  <div class="section-title">💇 Pelo & Uñas</div>
+
+  <div class="info-block" style="font-size:0.83rem; margin-bottom:1.2rem;">
+    Dos partes complementarias: <strong>los nutrientes que ya están en tu plan de comidas</strong> y un <strong>tracker de 100 días</strong> para regenerar las uñas (no morderse, hidratar, fortalecer).
+  </div>
+
+  <div class="subsection-title" style="margin-top:0;">Nutrientes clave en tu menú</div>
+
+  <div class="tip-grid">
+    <div class="tip-card">
+      <div class="tip-icon">🥚</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Biotina (Vitamina B7)</div>
+        <div class="tip-text">Fundamental para el cabello y las uñas. La yema del huevo es la fuente más rica que existe. <strong>Ya en tu plan</strong>: tortillas y revueltos casi a diario. ✅<br>⚠️ La clara cruda bloquea la biotina, pero cocinada no hay problema.</div>
+        <span class="tip-badge">En tu menú ✓</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">🦪</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Zinc</div>
+        <div class="tip-text">Regula directamente la caída del pelo y la regeneración de uñas. <strong>Garbanzos y lentejas</strong> (martes y jueves) son muy buena fuente vegetal. Los pescados también lo aportan.</div>
+        <span class="tip-badge">En tu menú ✓</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">🩸</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Hierro</div>
+        <div class="tip-text">El déficit de hierro es la causa más frecuente de caída del pelo. <strong>Espinacas</strong> (tortilla jueves, ensalada miércoles), <strong>lentejas</strong> y <strong>garbanzos</strong> aportan hierro vegetal. <strong>Truco clave</strong>: toma el zumo de naranja siempre con las legumbres — la vitamina C dobla la absorción del hierro.</div>
+        <span class="tip-badge">Añade el zumo siempre</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">🐟</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Omega-3</div>
+        <div class="tip-text">Nutre el folículo capilar, da brillo y reduce la inflamación del cuero cabelludo. <strong>Salmón, merluza, lubina y dorada</strong> ya están en tu plan. Complementa con <strong>nueces</strong> (en la lista) como fuente vegetal de omega-3.</div>
+        <span class="tip-badge">En tu menú ✓</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">💪</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Proteína (Queratina)</div>
+        <div class="tip-text">El pelo y las uñas son casi 100% queratina — una proteína. Sin suficiente proteína no pueden regenerarse. Con 100 kg, apunta a <strong>120–140 g de proteína al día</strong>. Tu plan (pescados, huevos, legumbres) lo cubre bien.</div>
+        <span class="tip-badge">En tu menú ✓</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">🌰</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Selenio</div>
+        <div class="tip-text">Antioxidante que protege el folículo capilar del daño oxidativo. <strong>Merluza y dorada</strong> lo aportan, pero la fuente más potente son las <strong>nueces de Brasil</strong>: con solo 2–3 al día cubres prácticamente toda tu dosis diaria. Ya están en la lista. 💇</div>
+        <span class="tip-badge">⭐ Prioridad alta</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">🍊</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Vitamina C</div>
+        <div class="tip-text">Sintetiza el colágeno que forma la matriz de las uñas. El <strong>gazpacho</strong> (tomate crudo) y el <strong>zumo de naranja del desayuno</strong> son perfectos. Además, como se explicó, potencia la absorción del hierro.</div>
+        <span class="tip-badge">En tu menú ✓</span>
+      </div>
+    </div>
+
+    <div class="tip-card">
+      <div class="tip-icon">💊</div>
+      <div class="tip-content">
+        <div class="tip-nutrient">Si no notas mejoría</div>
+        <div class="tip-text">Si en 3 meses de dieta + los nutrientes anteriores no notas mejoría, consulta con tu médico un análisis de sangre completo incluyendo: <strong>ferritina, zinc, vitamina D y hormonas tiroideas</strong>. Son las causas analíticas más frecuentes de caída del pelo en hombres.</div>
+        <span class="tip-badge">Importante</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection-title">Tracker 100 días — regenerar uñas</div>
+
+  <div class="unas-top">
+    <div class="unas-stat"><div class="unas-stat-val" id="s-done">0</div><div class="unas-stat-lbl">días</div></div>
+    <div class="unas-stat"><div class="unas-stat-val" id="s-streak">0</div><div class="unas-stat-lbl">racha</div></div>
+    <div class="unas-stat"><div class="unas-stat-val" id="s-left">100</div><div class="unas-stat-lbl">restantes</div></div>
+    <div class="unas-bar-wrap">
+      <div class="unas-bar-bg"><div class="unas-bar-fg" id="bar" style="width:0%"></div></div>
+      <div class="unas-bar-pct" id="pct">0 %</div>
+    </div>
+  </div>
+
+  <div class="phases">
+    <div class="phase-card p1">
+      <div class="phase-head"><div class="phase-dot"></div><span class="phase-title">Mes 1 — Romper el hábito</span></div>
+      <div class="phase-days">Días 1 – 33</div>
+      <ul class="phase-items">
+        <li>Esmalte de sabor amargo cada mañana</li>
+        <li>Registra cada vez que te llevas los dedos a la boca</li>
+        <li>Identifica disparadores (estrés, pantallas...)</li>
+        <li>Hidrata manos y cutículas 2 veces al día</li>
+        <li>Proteína y biotina en cada comida (ver arriba)</li>
+        <li>2 litros de agua mínimo</li>
+      </ul>
+    </div>
+    <div class="phase-card p2">
+      <div class="phase-head"><div class="phase-dot"></div><span class="phase-title">Mes 2 — Fortalecimiento</span></div>
+      <div class="phase-days">Días 34 – 66</div>
+      <ul class="phase-items">
+        <li>Aceite de cutículas + masaje cada noche</li>
+        <li>Lima cada 7–10 días en una sola dirección</li>
+        <li>Baño de aceite de oliva 3 veces por semana</li>
+        <li>Guantes siempre al limpiar</li>
+        <li>Base fortalecedora sin formaldehído</li>
+        <li>Foto quincenal para ver el avance</li>
+      </ul>
+    </div>
+    <div class="phase-card p3">
+      <div class="phase-head"><div class="phase-dot"></div><span class="phase-title">Mes 3 — Consolidación</span></div>
+      <div class="phase-days">Días 67 – 100</div>
+      <ul class="phase-items">
+        <li>Rutinas de aceite ya automáticas</li>
+        <li>Técnica anti-estrés diaria (respiración, ejercicio)</li>
+        <li>Salmón, huevo y semillas frecuentes</li>
+        <li>Baño de aceite reducido a 1 vez por semana</li>
+        <li>Nunca arranques el esmalte gel</li>
+        <li>Compara foto del día 1 con la actual</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="unas-grid" id="grid"></div>
+
+  <div class="unas-actions">
+    <button class="primary" id="btn-today">+ 1 día de hoy</button>
+    <button id="btn-reset">Reiniciar</button>
+  </div>
+  <div id="streak-msg" class="streak-msg"></div>
+  <div id="tip" class="tip-line"></div>
+</section>
+
+<!-- ══════════════════════ APUESTA ══════════════════════ -->
+<section class="section" id="apuesta">
+  <div class="section-title">💰 Apuesta semanal</div>
+
+  <div class="info-block" style="font-size:0.85rem; margin-bottom:1.2rem;">
+    Sistema de incentivo: si <strong>cumples</strong> tu objetivo de bajada de peso semanal, no pagas nada. Si no, pagas una cantidad proporcional a lo que te alejaste del objetivo, hasta un máximo. Ajusta los sliders cada semana y registra tu avance.
+  </div>
+
+  <div class="apuesta-card">
+    <div class="subsection-title" style="margin-top:0;">Configuración</div>
+    <div class="slider-row">
+      <span class="slider-label">Objetivo mínimo (kg/sem)</span>
+      <input type="range" id="sl-obj" min="0.1" max="1.5" step="0.1" value="0.5">
+      <span class="slider-val" id="lbl-obj">0.5 kg</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Apuesta máxima (€)</span>
+      <input type="range" id="sl-max" min="5" max="200" step="5" value="50">
+      <span class="slider-val" id="lbl-max">50 €</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Cambio de peso esta semana</span>
+      <input type="range" id="sl-kg" min="-2" max="2" step="0.1" value="0.3">
+      <span class="slider-val" id="lbl-kg">+0.3 kg</span>
+    </div>
+  </div>
+
+  <div class="apuesta-card">
+    <div class="subsection-title" style="margin-top:0;">Resultado de la semana</div>
+    <div class="metrics">
+      <div class="metric">
+        <p class="metric-label">Objetivo</p>
+        <p class="metric-val" id="m-obj">bajar 0.5 kg</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Cambio real</p>
+        <p class="metric-val" id="m-res">+0.3 kg</p>
+      </div>
+      <div class="metric">
+        <p class="metric-label">Pago esta semana</p>
+        <p class="metric-val" id="m-pay">0 €</p>
+      </div>
+    </div>
+
+    <div class="apuesta-progress-wrap">
+      <div class="apuesta-bar-bg">
+        <div class="apuesta-bar-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="apuesta-progress-labels">
+        <span id="prog-left">Objetivo cumplido → 0 €</span>
+        <span id="prog-right">+1 kg → máximo</span>
+      </div>
+    </div>
+
+    <div class="status-msg status-safe" id="status-msg">¡Objetivo cumplido! No pagas nada.</div>
+
+    <div class="date-row">
+      <input type="date" id="inp-date">
+      <button class="add-btn" onclick="addWeek()">+ Registrar semana</button>
+    </div>
+  </div>
+
+  <div class="apuesta-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+      <div class="subsection-title" style="margin:0;border:none;padding:0;">Historial acumulado</div>
+      <button class="clear-btn" onclick="clearApuestaHistory()">Borrar todo</button>
+    </div>
+    <div id="hist-body"><p class="history-empty">Aún no hay semanas registradas.</p></div>
+    <div class="totals-row" id="totals-row" style="display:none">
+      <div><div class="totals-label">Total pagado</div><div class="totals-val" id="total-paid">0 €</div></div>
+      <div><div class="totals-label">Cumplidas</div><div class="totals-val" id="total-ok">0</div></div>
+      <div><div class="totals-label">Fallidas</div><div class="totals-val" id="total-fail">0</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ GASTOS ══════════════════════ -->
+<section class="section" id="gastos">
+  <div class="section-title">💸 Gastos · Mayo — Julio 2026</div>
+
+  <div class="gastos-tabs">
+    <button class="gastos-tab active" onclick="showGastos('config', this)">⚙️ Config</button>
+    <button class="gastos-tab" onclick="showGastos('may', this)">Mayo</button>
+    <button class="gastos-tab" onclick="showGastos('jun', this)">Junio</button>
+    <button class="gastos-tab" onclick="showGastos('jul', this)">Julio</button>
+    <button class="gastos-tab" onclick="showGastos('overview', this)">📊 Resumen</button>
+  </div>
+
+  <div class="gastos-panel active" id="g-config"></div>
+  <div class="gastos-panel" id="g-may"></div>
+  <div class="gastos-panel" id="g-jun"></div>
+  <div class="gastos-panel" id="g-jul"></div>
+  <div class="gastos-panel" id="g-overview"></div>
+</section>
+
+<!-- ══════════════════════ CONSEJOS ══════════════════════ -->
+<section class="section" id="consejos">
+  <div class="section-title">💡 Consejos</div>
+
+  <div class="advice-block">
+    <div class="advice-title">🔥 Tu déficit calórico diario</div>
+    <div class="advice-body">
+      <table class="calorie-table">
+        <tr><th>Concepto</th><th>kcal</th></tr>
+        <tr><td>Metabolismo basal (BMR)</td><td>1.951</td></tr>
+        <tr><td>Actividad moderada (+30%)</td><td>~2.540</td></tr>
+        <tr><td>Objetivo para perder 0,5 kg/semana</td><td>– 500</td></tr>
+        <tr><td><strong>Ingesta objetivo diaria</strong></td><td><strong>~1.500–1.600</strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="advice-block">
+    <div class="advice-title">🧬 Preservar la masa muscular</div>
+    <div class="advice-body">
+      Tienes <strong>69,6 kg de masa muscular</strong> — es un activo enorme. Para no perderla mientras adelgazas:
+      <ul>
+        <li>Come proteína en <strong>cada comida y cena</strong> (pescado, huevos, legumbres)</li>
+        <li>Apunta a <strong>1,2–1,4 g de proteína por kg de peso</strong> → unos 120–140 g/día</li>
+        <li>Haz <strong>ejercicio de fuerza</strong> al menos 2 veces por semana (complementa al plan de carrera)</li>
+        <li>No bajes de 1.400 kcal — por debajo el cuerpo empieza a "comerse" el músculo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="advice-block">
+    <div class="advice-title">🥣 Por qué este menú funciona</div>
+    <div class="advice-body">
+      <ul>
+        <li><strong>Las cremas y gazpacho</strong> llenan mucho con pocas calorías — perfectos para el primer plato</li>
+        <li><strong>Las legumbres 2–3 veces por semana</strong> dan proteína vegetal + fibra → sacian durante horas</li>
+        <li><strong>Los pescados blancos</strong> (merluza, lubina, dorada) tienen proteína alta y grasa baja</li>
+        <li><strong>Los huevos en la cena</strong> son rápidos, saciantes y nutritivos — ideales</li>
+        <li><strong>El zumo de naranja siempre con las legumbres</strong> duplica la absorción del hierro</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="advice-block">
+    <div class="advice-title">⚖️ Grasa visceral (nivel 13)</div>
+    <div class="advice-body">
+      El nivel 13 está en zona <strong>alta</strong> (el rango saludable es 1–9). Esta grasa rodea los órganos y es la que más afecta a la salud cardiovascular y metabólica. La buena noticia: <strong>es la primera que se pierde</strong> con déficit calórico + ejercicio aeróbico. En 4–6 semanas con este plan ya deberías notar bajada.
+    </div>
+  </div>
+
+  <div class="advice-block">
+    <div class="advice-title">🏃 Ejercicio: cardio + fuerza</div>
+    <div class="advice-body">
+      El plan de carrera (sección "🏃 Carrera") cubre el cardio progresivo. Para maximizar la pérdida de grasa visceral y conservar músculo, complementa con:
+      <ul>
+        <li><strong>2 días de fuerza/semana</strong>: pesas, máquinas o ejercicios con tu propio peso</li>
+        <li>La constancia es más importante que la intensidad</li>
+        <li>Caminar después de comer reduce el pico de glucosa y mejora la quema de grasa</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="advice-block">
+    <div class="advice-title">📈 Control del progreso</div>
+    <div class="advice-body">
+      <ul>
+        <li>Pésate <strong>siempre en las mismas condiciones</strong>: por la mañana, en ayunas, sin ropa</li>
+        <li>La báscula puede no bajar todos los días — es normal por el agua y la digestión</li>
+        <li>Lo que importa es la <strong>tendencia semanal</strong>, no el día a día</li>
+        <li>Hazte una <strong>medición corporal completa cada 4 semanas</strong> (sección "⚖️ Peso")</li>
+        <li>Si en 3 semanas no pierdes nada, reduce 100–150 kcal más del total</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-footer">
+    Plan basado en el libro «Recetas sencillas para novatos y cocinillas» de Xabier Gutiérrez.<br>
+    Nutriscore verificado en OpenFoodFacts. Precios orientativos Mercadona 2026.<br>
+    Este plan no sustituye el consejo de un médico o nutricionista.
+  </div>
+</section>
+
+<script>
+/* ════════ NAV PRINCIPAL ════════ */
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Render specific data on tab change
+  if (id === 'perfil') updateObjetivosBars();
+  if (id === 'peso') { renderResumen(); }
+  if (id === 'carrera') renderPlan();
+}
+
+/* ════════ MENÚ · día abrir/cerrar ════════ */
+function toggleDay(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* ════════ COMPRA · checkboxes ════════ */
+function toggleShop(el) {
+  el.classList.toggle('checked');
+  updateShopProgress();
+  saveShop();
+}
+function resetShop() {
+  document.querySelectorAll('.shop-item').forEach(i => i.classList.remove('checked'));
+  updateShopProgress();
+  saveShop();
+}
+function updateShopProgress() {
+  const all = document.querySelectorAll('.shop-item');
+  const done = document.querySelectorAll('.shop-item.checked');
+  const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = done.length + ' / ' + all.length + ' artículos';
+}
+function saveShop() {
+  try {
+    const s = Array.from(document.querySelectorAll('.shop-item')).map(i => i.classList.contains('checked'));
+    localStorage.setItem('plan_compra_v2', JSON.stringify(s));
+    sbPush('plan_compra_v2', s);
+  } catch(e) {}
+}
+function loadShop() {
+  try {
+    const s = JSON.parse(localStorage.getItem('plan_compra_v2') || '[]');
+    const items = document.querySelectorAll('.shop-item');
+    s.forEach((c, i) => { if (items[i] && c) items[i].classList.add('checked'); });
+  } catch(e) {}
+  updateShopProgress();
+}
+
+/* ════════ PESO · seguimiento ════════ */
+const PESO_INICIO = 100.3;
+const CINTURA_INICIO = 109;
+const GRASA_INICIO = 27.0;
+
+const SEMANAS = [
+  { num:1, label:'Semana 1 · 4–10 mayo', sub:'3 salidas · 25–30 min andando', fase:1 },
+  { num:2, label:'Semana 2 · 11–17 mayo', sub:'3 salidas · 35 min andando, paso vivo', fase:1 },
+  { num:3, label:'Semana 3 · 18–24 mayo', sub:'4 salidas · 35 min · 3×1 min trote', fase:1 },
+  { num:4, label:'Semana 4 · 25–31 mayo', sub:'4 salidas · 40 min · 5×1 min trote + pesarse', fase:1 },
+  { num:5, label:'Semana 5 · 1–7 jun', sub:'4 salidas · 40 min · 2 min trote / 3 min marcha', fase:2 },
+  { num:6, label:'Semana 6 · 8–14 jun', sub:'4 salidas · 40 min · 3 min trote / 2 min marcha', fase:2 },
+  { num:7, label:'Semana 7 · 15–21 jun', sub:'4 salidas · 45 min · 5 min trote / 2 min marcha', fase:2 },
+  { num:8, label:'Semana 8 · 22–28 jun', sub:'4 salidas · 45 min · Consolidar 5:2 + medición completa', fase:2 },
+  { num:9, label:'Semana 9 · 29 jun–5 jul', sub:'4 salidas · 20 min carrera continua + 10 min marcha', fase:3 },
+  { num:10, label:'Semana 10 · 6–12 jul', sub:'4 salidas · 25 min carrera continua', fase:3 },
+  { num:11, label:'Semana 11 · 13–19 jul', sub:'4 salidas · 30 min carrera continua', fase:3 },
+  { num:12, label:'Semana 12 · 20–27 jul', sub:'4 salidas · 30–35 min + medición completa final', fase:3 },
+];
+
+function getData(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch(e) { return def; } }
+function setData(key, val) { localStorage.setItem(key, JSON.stringify(val)); sbPush(key, val); }
+
+let pesos = getData('ja_pesos', []);
+let mediciones = getData('ja_mediciones', []);
+let semanasHechas = getData('ja_semanas', []);
+
+document.getElementById('r-fecha').valueAsDate = new Date();
+document.getElementById('m-fecha').valueAsDate = new Date();
+
+function showTrackerTab(name, btn) {
+  document.querySelectorAll('.tracker-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tracker-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tracker-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'resumen') renderResumen();
+  if (name === 'historial') renderHistorial();
+}
+
+function guardarPeso() {
+  const fecha = document.getElementById('r-fecha').value;
+  const peso = parseFloat(document.getElementById('r-peso').value);
+  const bienestar = document.getElementById('r-bienestar').value;
+  const notas = document.getElementById('r-notas').value.trim();
+  if (!fecha || isNaN(peso)) { alert('Introduce fecha y peso.'); return; }
+  pesos.push({ fecha, peso, bienestar, notas });
+  pesos.sort((a,b) => a.fecha.localeCompare(b.fecha));
+  setData('ja_pesos', pesos);
+  document.getElementById('r-peso').value = '';
+  document.getElementById('r-notas').value = '';
+  document.getElementById('r-bienestar').value = '';
+  alert('Peso guardado: ' + peso + ' kg');
+  updateObjetivosBars();
+}
+
+function guardarMedicion() {
+  const fields = ['fecha','cintura','caderas','pecho','brazo','muslo','pantorrilla','grasa','visceral','musculo'];
+  const m = {};
+  fields.forEach(f => {
+    const el = document.getElementById('m-' + f);
+    m[f] = f === 'fecha' ? el.value : (el.value ? parseFloat(el.value) : null);
+  });
+  if (!m.fecha) { alert('Introduce la fecha.'); return; }
+  mediciones.push(m);
+  mediciones.sort((a,b) => a.fecha.localeCompare(b.fecha));
+  setData('ja_mediciones', mediciones);
+  ['cintura','caderas','pecho','brazo','muslo','pantorrilla','grasa','visceral','musculo'].forEach(f => {
+    document.getElementById('m-' + f).value = '';
+  });
+  alert('Medición guardada.');
+  updateObjetivosBars();
+}
+
+function eliminarPeso(i) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  pesos.splice(i, 1);
+  setData('ja_pesos', pesos);
+  renderHistorial();
+  updateObjetivosBars();
+}
+
+function eliminarMedicion(i) {
+  if (!confirm('¿Eliminar esta medición?')) return;
+  mediciones.splice(i, 1);
+  setData('ja_mediciones', mediciones);
+  renderHistorial();
+  updateObjetivosBars();
+}
+
+function fmtFecha(s) {
+  if (!s) return '—';
+  const [y,m,d] = s.split('-');
+  return d + '/' + m + '/' + y;
+}
+
+function delta(val, ref, invertido) {
+  if (val === null || val === undefined) return '—';
+  const d = val - ref;
+  const s = d > 0 ? '+' : '';
+  const cls = invertido ? (d < 0 ? 'delta-pos' : d > 0 ? 'delta-neg' : 'delta-neu') : (d > 0 ? 'delta-pos' : d < 0 ? 'delta-neg' : 'delta-neu');
+  return `<span class="${cls}">${s}${d.toFixed(1)}</span>`;
+}
+
+function updateObjetivosBars() {
+  const ultPeso = pesos.length ? pesos[pesos.length-1].peso : PESO_INICIO;
+  const pesoObj = 94;
+  const pesoPct = Math.min(100, Math.max(0, ((PESO_INICIO - ultPeso) / (PESO_INICIO - pesoObj)) * 100));
+  document.getElementById('prog-peso').style.width = pesoPct.toFixed(1) + '%';
+  document.getElementById('prog-peso-val').textContent = ultPeso.toFixed(1) + ' → 93–95 kg';
+
+  const ultCintura = mediciones.length ? (mediciones[mediciones.length-1].cintura || CINTURA_INICIO) : CINTURA_INICIO;
+  const cinturaPct = Math.min(100, Math.max(0, ((CINTURA_INICIO - ultCintura) / (CINTURA_INICIO - 100)) * 100));
+  document.getElementById('prog-cintura').style.width = cinturaPct.toFixed(1) + '%';
+  document.getElementById('prog-cintura-val').textContent = ultCintura.toFixed(1) + ' → 100 cm';
+
+  const ultGrasa = mediciones.length ? (mediciones[mediciones.length-1].grasa || GRASA_INICIO) : GRASA_INICIO;
+  const grasaPct = Math.min(100, Math.max(0, ((GRASA_INICIO - ultGrasa) / (GRASA_INICIO - 22)) * 100));
+  document.getElementById('prog-grasa').style.width = grasaPct.toFixed(1) + '%';
+  document.getElementById('prog-grasa-val').textContent = ultGrasa.toFixed(1) + '% → 22%';
+
+  const semanaPct = (semanasHechas.length / 12) * 100;
+  document.getElementById('prog-semanas').style.width = semanaPct.toFixed(1) + '%';
+  document.getElementById('prog-semanas-val').textContent = semanasHechas.length + ' / 12';
+}
+
+function renderResumen() {
+  const ul = document.getElementById('ultimo-registro');
+  if (pesos.length) {
+    const last = pesos[pesos.length-1];
+    const prev = pesos.length > 1 ? pesos[pesos.length-2].peso : PESO_INICIO;
+    ul.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px;">
+        <div><div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Fecha</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--text);">${fmtFecha(last.fecha)}</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Peso</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--text);">${last.peso.toFixed(1)} kg</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Δ semana</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">${delta(last.peso, prev, true)}</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">Δ inicio</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;">${delta(last.peso, PESO_INICIO, true)} kg</div></div>
+        ${last.notas ? `<div style="grid-column:1/-1;font-size:0.82rem;color:var(--text-dim);border-top:1px solid var(--border);padding-top:10px;margin-top:6px;">${last.notas}</div>` : ''}
+      </div>`;
+  } else {
+    ul.innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;">Aún no hay registros. Ve a "Registrar" para añadir el primero.</div>';
+  }
+  renderChart();
+}
+
+let chartInst = null;
+function renderChart() {
+  const canvas = document.getElementById('chartPeso');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const labels = [{ fecha: '2026-04-27', peso: PESO_INICIO, esInicio: true }, ...pesos].map(p => fmtFecha(p.fecha));
+  const data = [{ fecha: '2026-04-27', peso: PESO_INICIO }, ...pesos].map(p => p.peso);
+
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Peso (kg)',
+        data,
+        borderColor: '#6fcf8c',
+        backgroundColor: 'rgba(111,207,140,0.10)',
+        pointBackgroundColor: '#6fcf8c',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 1.5,
+        tension: 0.3,
+        fill: true,
+      }, {
+        label: 'Objetivo',
+        data: labels.map(() => 94),
+        borderColor: '#c9a84c',
+        borderWidth: 1,
+        borderDash: [4,4],
+        pointRadius: 0,
+        fill: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1c2b1e', titleColor: '#6fcf8c', bodyColor: '#e8f0e9', borderColor: '#2e4233', borderWidth: 1 }
+      },
+      scales: {
+        x: { ticks: { color: '#8aaa90', font: { size: 10 } }, grid: { color: '#243328' } },
+        y: { ticks: { color: '#8aaa90', font: { size: 10 }, callback: v => v + ' kg' }, grid: { color: '#243328' }, suggestedMin: 88, suggestedMax: 102 }
+      }
+    }
+  });
+}
+
+function renderHistorial() {
+  const tb = document.getElementById('tbody-pesos');
+  if (!pesos.length) {
+    tb.innerHTML = '<tr><td colspan="7"><div class="empty-state">Sin registros aún</div></td></tr>';
+  } else {
+    tb.innerHTML = pesos.map((p, i) => {
+      const prev = i > 0 ? pesos[i-1].peso : PESO_INICIO;
+      const estado = ['','Mal','Regular','Bien'][p.bienestar] || '—';
+      return `<tr>
+        <td>${fmtFecha(p.fecha)}</td>
+        <td><strong>${p.peso.toFixed(1)}</strong> kg</td>
+        <td>${delta(p.peso, prev, true)} kg</td>
+        <td>${delta(p.peso, PESO_INICIO, true)} kg</td>
+        <td>${estado}</td>
+        <td style="color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.notas || '—'}</td>
+        <td><button class="btn-ghost" onclick="eliminarPeso(${i})">×</button></td>
+      </tr>`;
+    }).reverse().join('');
+  }
+
+  const tm = document.getElementById('tbody-mediciones');
+  if (!mediciones.length) {
+    tm.innerHTML = '<tr><td colspan="7"><div class="empty-state">Sin mediciones aún</div></td></tr>';
+  } else {
+    tm.innerHTML = mediciones.map((m, i) => {
+      return `<tr>
+        <td>${fmtFecha(m.fecha)}</td>
+        <td>${m.cintura ? m.cintura.toFixed(1) + ' cm ' + delta(m.cintura, CINTURA_INICIO, true) : '—'}</td>
+        <td>${m.caderas ? m.caderas.toFixed(1) + ' cm' : '—'}</td>
+        <td>${m.grasa ? m.grasa.toFixed(1) + '%' : '—'}</td>
+        <td>${m.visceral || '—'}</td>
+        <td>${m.musculo ? m.musculo.toFixed(1) + ' kg' : '—'}</td>
+        <td><button class="btn-ghost" onclick="eliminarMedicion(${i})">×</button></td>
+      </tr>`;
+    }).reverse().join('');
+  }
+}
+
+function renderPlan() {
+  const hoy = new Date();
+  const inicio = new Date('2026-05-04');
+  const diasDesdeInicio = Math.floor((hoy - inicio) / 86400000);
+  const semanaActual = Math.floor(diasDesdeInicio / 7) + 1;
+
+  ['phase-1','phase-2','phase-3'].forEach(id => {
+    document.getElementById(id).classList.remove('active-phase','done-phase');
+  });
+  if (semanaActual >= 1 && semanaActual <= 4) document.getElementById('phase-1').classList.add('active-phase');
+  else if (semanaActual >= 5 && semanaActual <= 8) document.getElementById('phase-2').classList.add('active-phase');
+  else if (semanaActual >= 9 && semanaActual <= 12) document.getElementById('phase-3').classList.add('active-phase');
+  if (semanaActual > 4) document.getElementById('phase-1').classList.add('done-phase');
+  if (semanaActual > 8) document.getElementById('phase-2').classList.add('done-phase');
+
+  const wl = document.getElementById('week-list');
+  wl.innerHTML = SEMANAS.map(s => {
+    const done = semanasHechas.includes(s.num);
+    const esCurrent = s.num === semanaActual;
+    return `<div class="week-item ${done ? 'done' : ''}" onclick="toggleSemana(${s.num})">
+      <div class="week-check">${done ? '✓' : (esCurrent ? '›' : '')}</div>
+      <div class="week-info">
+        <div class="wk-label">${s.label}${esCurrent ? ' <span class="wk-current">← AHORA</span>' : ''}</div>
+        <div class="wk-sub">${s.sub}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSemana(num) {
+  const idx = semanasHechas.indexOf(num);
+  if (idx >= 0) semanasHechas.splice(idx, 1);
+  else semanasHechas.push(num);
+  setData('ja_semanas', semanasHechas);
+  renderPlan();
+  updateObjetivosBars();
+}
+
+/* ════════ TRACKER UÑAS 100 días ════════ */
+const TIPS = ["Hoy sin morderte: eso cuenta.","Hidrata las cutículas esta noche.","Bebe tus 2 litros de agua hoy.","Come algo con biotina: nueces, aguacate...","Usa guantes al lavar platos.","Aplica el aceite antes de dormir.","Lima suavemente si lo necesitas.","Un día más, un día menos de hábito.","Tus uñas ya están creciendo tejido nuevo.","La constancia vale más que la perfección.","Recaída no es fracaso, es parte del proceso.","Fotografía tus uñas para ver el progreso.","Evita el quitaesmalte con acetona.","Masajea las uñas hoy para activar la circulación."];
+const MILESTONES = {10:"10 días — ¡la racha empieza a ser hábito!",33:"Mes 1 completado — el hábito está cambiando.",66:"Mes 2 completado — ya ves uña nueva desde la base.",100:"100 días. Lo lograste. Tus uñas te lo agradecen."};
+
+let unasState = JSON.parse(localStorage.getItem('unas_v2') || '{"done":0}');
+
+function saveUnas() { localStorage.setItem('unas_v2', JSON.stringify(unasState)); sbPush('unas_v2', unasState); }
+function unasPhase(n) { return n <= 33 ? 'p1' : n <= 66 ? 'p2' : 'p3'; }
+
+function renderUnas() {
+  const done = unasState.done;
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-streak').textContent = done;
+  document.getElementById('s-left').textContent = Math.max(0, 100 - done);
+  document.getElementById('bar').style.width = done + '%';
+  document.getElementById('pct').textContent = done + ' %';
+
+  const btn = document.getElementById('btn-today');
+  btn.textContent = done >= 100 ? 'Completado' : '+ 1 día de hoy';
+  btn.disabled = done >= 100;
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 100; i++) {
+    const d = document.createElement('div');
+    d.className = 'unas-cell ' + unasPhase(i) + (i <= done ? ' done' : '') + (i === done ? ' today' : '');
+    d.textContent = i <= done ? i : '';
+    d.title = 'Día ' + i + (i <= done ? ' ✓' : '');
+    d.addEventListener('click', () => {
+      if (i <= done) { unasState.done = i - 1; }
+      else if (i === done + 1) { unasState.done = i; }
+      saveUnas(); renderUnas();
+    });
+    grid.appendChild(d);
+  }
+
+  document.getElementById('streak-msg').textContent = done >= 3 ? 'Llevas ' + done + ' días acumulados' : '';
+  const tipEl = document.getElementById('tip');
+  if (MILESTONES[done]) tipEl.textContent = MILESTONES[done];
+  else tipEl.textContent = done > 0 ? TIPS[(done - 1) % TIPS.length] : 'Pulsa el botón cada día que cumplas el plan.';
+}
+
+document.getElementById('btn-today').addEventListener('click', () => {
+  if (unasState.done >= 100) return;
+  unasState.done++;
+  saveUnas(); renderUnas();
+});
+
+document.getElementById('btn-reset').addEventListener('click', (ev) => {
+  const btn = ev.currentTarget;
+  if (btn.dataset.confirm === '1') {
+    clearTimeout(parseInt(btn.dataset.timer));
+    btn.dataset.confirm = '';
+    btn.dataset.timer = '';
+    btn.textContent = 'Reiniciar';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    unasState = { done: 0 };
+    saveUnas();
+    renderUnas();
+  } else {
+    btn.dataset.confirm = '1';
+    btn.textContent = '¿Confirmar reinicio?';
+    btn.style.background = '#e07a5f';
+    btn.style.color = '#fff';
+    btn.style.borderColor = '#e07a5f';
+    const tid = setTimeout(() => {
+      btn.dataset.confirm = '';
+      btn.dataset.timer = '';
+      btn.textContent = 'Reiniciar';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 3000);
+    btn.dataset.timer = String(tid);
+  }
+});
+
+/* ════════ APUESTA SEMANAL ════════ */
+const slObj = document.getElementById('sl-obj');
+const slMax = document.getElementById('sl-max');
+const slKg  = document.getElementById('sl-kg');
+const lblObj = document.getElementById('lbl-obj');
+const lblMax = document.getElementById('lbl-max');
+const lblKg  = document.getElementById('lbl-kg');
+const mObj   = document.getElementById('m-obj');
+const mRes   = document.getElementById('m-res');
+const mPay   = document.getElementById('m-pay');
+const progFill  = document.getElementById('prog-fill');
+const progLeft  = document.getElementById('prog-left');
+const progRight = document.getElementById('prog-right');
+const statusMsg = document.getElementById('status-msg');
+const histBody  = document.getElementById('hist-body');
+const totalsRow = document.getElementById('totals-row');
+const totalPaid = document.getElementById('total-paid');
+const totalOk   = document.getElementById('total-ok');
+const totalFail = document.getElementById('total-fail');
+const inpDate   = document.getElementById('inp-date');
+
+inpDate.value = new Date().toISOString().split('T')[0];
+
+let apuestaHistory = getData('apuesta_history', []);
+let apuestaWeekNum = apuestaHistory.length ? Math.max(...apuestaHistory.map(h => h.week)) + 1 : 1;
+
+function fmtKg(v) { return (v > 0 ? '+' : '') + v.toFixed(1) + ' kg'; }
+
+function calcPayment(obj, change, maxAp) {
+  const threshold = -obj;
+  if (change <= threshold) return 0;
+  const maxDist = obj + 1.0;
+  const dist = Math.min(change - threshold, maxDist);
+  const t = dist / maxDist;
+  return parseFloat((Math.pow(t, 2) * maxAp).toFixed(2));
+}
+
+function updateApuesta() {
+  const obj    = parseFloat(slObj.value);
+  const maxAp  = parseFloat(slMax.value);
+  const change = parseFloat(slKg.value);
+
+  lblObj.textContent = obj.toFixed(1) + ' kg';
+  lblMax.textContent = maxAp.toFixed(0) + ' €';
+  lblKg.textContent  = fmtKg(change);
+
+  mObj.textContent = 'bajar ' + obj.toFixed(1) + ' kg';
+  mRes.textContent = fmtKg(change);
+
+  const payment = calcPayment(obj, change, maxAp);
+  mPay.textContent = payment.toFixed(2) + ' €';
+
+  const threshold = -obj;
+  const maxDist = obj + 1.0;
+  let pct = ((change - threshold) / maxDist) * 100;
+  pct = Math.min(Math.max(pct, 0), 100);
+  progFill.style.width = pct + '%';
+  progLeft.textContent = 'bajar ' + obj.toFixed(1) + ' kg → 0 €';
+  progRight.textContent = '+1 kg → ' + maxAp.toFixed(0) + ' €';
+
+  if (payment === 0) {
+    progFill.style.background = '#4caf6e';
+    statusMsg.className = 'status-msg status-safe';
+    statusMsg.textContent = '¡Objetivo cumplido! No pagas nada esta semana.';
+  } else if (payment < maxAp * 0.5) {
+    progFill.style.background = '#e8b96a';
+    statusMsg.className = 'status-msg status-warn';
+    statusMsg.textContent = 'No has llegado al objetivo. Pagas ' + payment.toFixed(2) + ' €.';
+  } else {
+    progFill.style.background = '#e05c5c';
+    statusMsg.className = 'status-msg status-danger';
+    statusMsg.textContent = '¡Vaya semana! Has engordado demasiado. Pagas ' + payment.toFixed(2) + ' €.';
+  }
+}
+
+function addWeek() {
+  const obj    = parseFloat(slObj.value);
+  const maxAp  = parseFloat(slMax.value);
+  const change = parseFloat(slKg.value);
+  const payment = calcPayment(obj, change, maxAp);
+  const date = inpDate.value;
+  apuestaHistory.push({ week: apuestaWeekNum++, obj, change, maxAp, payment, date });
+  apuestaHistory.sort((a, b) => a.date.localeCompare(b.date));
+  setData('apuesta_history', apuestaHistory);
+  renderApuestaHistory();
+}
+
+function clearApuestaHistory() {
+  if (!confirm('¿Borrar todo el historial de apuestas?')) return;
+  apuestaHistory = [];
+  apuestaWeekNum = 1;
+  setData('apuesta_history', apuestaHistory);
+  renderApuestaHistory();
+}
+
+function renderApuestaHistory() {
+  if (apuestaHistory.length === 0) {
+    histBody.innerHTML = '<p class="history-empty">Aún no hay semanas registradas.</p>';
+    totalsRow.style.display = 'none';
+    return;
+  }
+  let html = '<table class="tracker-table"><thead><tr><th>Fecha</th><th>Objetivo</th><th>Resultado</th><th>Pago</th><th>Estado</th></tr></thead><tbody>';
+  let sumPaid = 0, sumOk = 0, sumFail = 0;
+  apuestaHistory.forEach(h => {
+    const ok = h.payment === 0;
+    sumPaid += h.payment;
+    ok ? sumOk++ : sumFail++;
+    const fechaLeg = h.date ? (function(s){ const [y,m,d] = s.split('-'); return d+'/'+m+'/'+y; })(h.date) : '—';
+    html += '<tr>'
+      + '<td>' + fechaLeg + '</td>'
+      + '<td>bajar ' + h.obj.toFixed(1) + ' kg</td>'
+      + '<td>' + fmtKg(h.change) + '</td>'
+      + '<td>' + (ok ? '—' : h.payment.toFixed(2) + ' €') + '</td>'
+      + '<td><span class="badge ' + (ok ? 'badge-ok' : 'badge-fail') + '">' + (ok ? 'Cumplido' : 'No cumplido') + '</span></td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+  histBody.innerHTML = html;
+  totalsRow.style.display = 'flex';
+  totalPaid.textContent = sumPaid.toFixed(2) + ' €';
+  totalOk.textContent = sumOk;
+  totalFail.textContent = sumFail;
+}
+
+slObj.addEventListener('input', updateApuesta);
+slMax.addEventListener('input', updateApuesta);
+slKg.addEventListener('input', updateApuesta);
+
+/* ════════ GASTOS ════════ */
+let GASTOS_INGRESO = 1221;
+let GASTOS_COLCHON = 2000;
+const GASTOS_MONTHS = [
+  {key:'may', label:'Mayo 2026'},
+  {key:'jun', label:'Junio 2026'},
+  {key:'jul', label:'Julio 2026'}
+];
+const GASTOS_CATS = ['Vivienda','Suministros','Alimentación','Transporte','Ocio','Ropa','Salud','Suscripciones','Imprevistos','Otro'];
+const GASTOS_PRESUPUESTO = {
+  'Vivienda':350,'Suministros':80,'Alimentación':90,'Transporte':80,
+  'Ocio':60,'Ropa':30,'Salud':20,'Suscripciones':20,'Imprevistos':30,'Otro':0
+};
+let gastosData = {may:[], jun:[], jul:[]};
+let gastosIdCounter = 1;
+
+function gEscape(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function loadGastos() {
+  try {
+    const s = localStorage.getItem('gastos_v2');
+    if (s) {
+      const d = JSON.parse(s);
+      if (typeof d.ingreso === 'number' && d.ingreso > 0) GASTOS_INGRESO = d.ingreso;
+      if (typeof d.colchon === 'number' && d.colchon >= 0) GASTOS_COLCHON = d.colchon;
+      if (d.data && d.data.may && d.data.jun && d.data.jul) gastosData = d.data;
+      if (typeof d.idCounter === 'number') gastosIdCounter = d.idCounter;
+    }
+  } catch(e) {}
+}
+function saveGastos() {
+  try {
+    const payload = { ingreso: GASTOS_INGRESO, colchon: GASTOS_COLCHON, data: gastosData, idCounter: gastosIdCounter };
+    localStorage.setItem('gastos_v2', JSON.stringify(payload));
+    sbPush('gastos_v2', payload);
+  } catch(e) {}
+}
+
+function gFmt(n){ return Math.round(n).toLocaleString('es-ES') + ' €'; }
+function gFmtSign(n){ return (n>=0?'+':'') + Math.round(n).toLocaleString('es-ES') + ' €'; }
+function gTotalMonth(key){ return gastosData[key].reduce((s,e)=>s+e.amt, 0); }
+function gTotalByCat(key){
+  const m = {};
+  GASTOS_CATS.forEach(c => m[c] = 0);
+  gastosData[key].forEach(e => m[e.cat] = (m[e.cat]||0) + e.amt);
+  return m;
+}
+
+function renderGastosConfig() {
+  const totalAhorroTrim = GASTOS_MONTHS.reduce((s,m) => s + Math.max(0, GASTOS_INGRESO - gTotalMonth(m.key)), 0);
+  const colchonProy = GASTOS_COLCHON + totalAhorroTrim;
+  document.getElementById('g-config').innerHTML = `
+  <div class="g-card">
+    <div class="g-sec-title">Ingresos y colchón</div>
+    <div class="g-cfg-row">
+      <span class="g-cfg-label">Ingresos mensuales netos (€)</span>
+      <input type="number" class="g-cfg-input" id="gcfg-ingreso" value="${GASTOS_INGRESO}" min="0" step="1" oninput="applyGastosConfig()" />
+    </div>
+    <div class="g-cfg-row">
+      <span class="g-cfg-label">Ahorro acumulado actual (€)</span>
+      <input type="number" class="g-cfg-input" id="gcfg-colchon" value="${GASTOS_COLCHON}" min="0" step="1" oninput="applyGastosConfig()" />
+    </div>
+  </div>
+  <div class="g-mcards" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+    <div class="g-mcard"><div class="g-mcard-label">Ingreso mensual</div><div class="g-mcard-val neu">${gFmt(GASTOS_INGRESO)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Colchón actual</div><div class="g-mcard-val neu">${gFmt(GASTOS_COLCHON)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Colchón tras 3 meses</div><div class="g-mcard-val pos">${gFmt(colchonProy)}</div></div>
+  </div>
+  <div class="g-card" style="font-size:0.85rem;color:var(--text-dim);line-height:1.7;">
+    Modifica los valores arriba y se actualizarán todos los meses automáticamente. El ahorro acumulado inicial es el punto de partida; cada mes que tengas balance positivo se suma a tu colchón. Los datos se guardan en este navegador.
+  </div>`;
+}
+
+function applyGastosConfig() {
+  const i = parseFloat(document.getElementById('gcfg-ingreso').value);
+  const c = parseFloat(document.getElementById('gcfg-colchon').value);
+  if (!isNaN(i) && i > 0) GASTOS_INGRESO = i;
+  if (!isNaN(c) && c >= 0) GASTOS_COLCHON = c;
+  saveGastos();
+  renderGastosConfig();
+  GASTOS_MONTHS.forEach(m => renderGastosMonth(m.key));
+  renderGastosOverview();
+}
+
+function renderGastosMonth(key) {
+  const total = gTotalMonth(key);
+  const balance = GASTOS_INGRESO - total;
+  const pct = Math.min(100, Math.round((total / GASTOS_INGRESO) * 100));
+  const catTotals = gTotalByCat(key);
+
+  let html = `
+  <div class="g-mcards">
+    <div class="g-mcard"><div class="g-mcard-label">Presupuesto</div><div class="g-mcard-val neu">${gFmt(GASTOS_INGRESO)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Gastado</div><div class="g-mcard-val ${total>GASTOS_INGRESO?'neg':''}">${gFmt(total)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Balance</div><div class="g-mcard-val ${balance>=0?'pos':'neg'}">${gFmtSign(balance)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Apuntes</div><div class="g-mcard-val">${gastosData[key].length}</div></div>
+  </div>
+  <div style="margin-bottom:1rem;">
+    <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-dim);margin-bottom:4px;"><span>Gasto del mes</span><span>${pct}%</span></div>
+    <div class="g-prog-bg"><div class="g-prog-fill ${pct>100?'g-prog-over':pct>80?'g-prog-warn':'g-prog-ok'}" style="width:${pct}%"></div></div>
+  </div>
+  <div class="g-grid-2">
+    <div><div class="g-card">
+      <div class="g-sec-title">Apuntes de gasto</div>
+      <div id="gentries-${key}">`;
+
+  if (gastosData[key].length === 0) {
+    html += `<div style="font-size:0.85rem;color:var(--text-muted);padding:14px 0;font-style:italic;">Sin apuntes todavía.</div>`;
+  } else {
+    gastosData[key].forEach(e => {
+      html += `<div class="g-entry-row">
+        <span class="g-entry-cat">${e.cat}</span>
+        <span class="g-entry-desc">${gEscape(e.desc)}</span>
+        <span class="g-entry-amt">${gFmt(e.amt)}</span>
+        <button class="g-entry-del" onclick="gastoDel('${key}',${e.id})" title="Eliminar">&#x2715;</button>
+      </div>`;
+    });
+  }
+
+  html += `</div>
+      <div class="g-add-row">
+        <input type="text" id="gdesc-${key}" placeholder="Descripción" />
+        <select id="gcat-${key}">${GASTOS_CATS.map(c => `<option>${c}</option>`).join('')}</select>
+        <input type="number" id="gamt-${key}" placeholder="€" min="0" step="0.01" />
+        <button class="g-add-btn" onclick="gastoAdd('${key}')">+ Añadir</button>
+      </div>
+    </div></div>
+    <div><div class="g-card">
+      <div class="g-sec-title">Por categoría</div>`;
+
+  GASTOS_CATS.filter(c => GASTOS_PRESUPUESTO[c] > 0 || catTotals[c] > 0).forEach(c => {
+    const spent = catTotals[c] || 0;
+    const budget = GASTOS_PRESUPUESTO[c] || 0;
+    const p = budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : (spent > 0 ? 100 : 0);
+    const badge = spent === 0 ? '' :
+      (spent > budget ? `<span class="g-badge g-badge-over">+${gFmt(spent - budget)}</span>` :
+        `<span class="g-badge g-badge-ok">${gFmt(budget - spent)} libre</span>`);
+    html += `<div class="g-cat-row"><div style="flex:1;min-width:0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+        <span style="font-size:0.85rem;color:var(--text);">${c}</span>${badge}
+      </div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">${gFmt(spent)} / ${budget>0?gFmt(budget):'libre'}</div>
+      ${budget>0?`<div class="g-prog-bg"><div class="g-prog-fill ${p>100?'g-prog-over':p>80?'g-prog-warn':'g-prog-ok'}" style="width:${p}%"></div></div>`:''}
+    </div></div>`;
+  });
+
+  html += `</div></div>
+  </div>`;
+  document.getElementById('g-' + key).innerHTML = html;
+}
+
+function renderGastosOverview() {
+  let totalTrim = 0, totalAhorro = 0, colchonAcum = GASTOS_COLCHON;
+  const monthRows = GASTOS_MONTHS.map(m => {
+    const total = gTotalMonth(m.key);
+    const balance = GASTOS_INGRESO - total;
+    totalTrim += total;
+    const ahorroMes = Math.max(0, balance);
+    totalAhorro += ahorroMes;
+    const pct = Math.min(100, Math.round((total / GASTOS_INGRESO) * 100));
+    colchonAcum += ahorroMes;
+    return { m, total, balance, pct, colchonAcum };
+  });
+
+  let html = `<div class="g-card"><div class="g-sec-title">Resumen mayo — julio 2026</div>`;
+  monthRows.forEach(({ m, total, balance, pct, colchonAcum }) => {
+    html += `<div class="g-overview-month">
+      <div class="g-ov-header">
+        <span class="g-ov-label">${m.label}</span>
+        <span style="font-size:1.05rem;font-weight:500;color:${balance>=0?'#6fcf8c':'#e07a5f'};font-family:'Cormorant Garamond',serif;">${gFmtSign(balance)}</span>
+      </div>
+      <div style="display:flex;gap:18px;font-size:0.78rem;color:var(--text-dim);flex-wrap:wrap;">
+        <span>Gasto: <strong style="color:var(--text)">${gFmt(total)}</strong></span>
+        <span>Ingreso: <strong style="color:var(--text)">${gFmt(GASTOS_INGRESO)}</strong></span>
+        <span>Colchón al cierre: <strong style="color:var(--gold)">${gFmt(colchonAcum)}</strong></span>
+      </div>
+      <div class="g-prog-bg" style="margin-top:8px;"><div class="g-prog-fill ${pct>100?'g-prog-over':pct>80?'g-prog-warn':'g-prog-ok'}" style="width:${pct}%"></div></div>
+    </div>`;
+  });
+  html += `</div>
+  <div class="g-mcards" style="grid-template-columns:repeat(3,minmax(0,1fr));">
+    <div class="g-mcard"><div class="g-mcard-label">Gasto trimestral</div><div class="g-mcard-val">${gFmt(totalTrim)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Ahorro generado</div><div class="g-mcard-val pos">${gFmt(totalAhorro)}</div></div>
+    <div class="g-mcard"><div class="g-mcard-label">Colchón final</div><div class="g-mcard-val neu">${gFmt(GASTOS_COLCHON + totalAhorro)}</div></div>
+  </div>`;
+
+  const allEntries = [...gastosData.may, ...gastosData.jun, ...gastosData.jul];
+  if (allEntries.length > 0) {
+    const catMap = {};
+    allEntries.forEach(e => catMap[e.cat] = (catMap[e.cat]||0) + e.amt);
+    const sorted = Object.entries(catMap).sort((a,b) => b[1] - a[1]);
+    html += `<div class="g-card"><div class="g-sec-title">Categorías · total trimestre</div>`;
+    sorted.forEach(([cat, amt]) => {
+      const p = Math.min(100, Math.round((amt / (GASTOS_INGRESO * 3)) * 100));
+      html += `<div class="g-cat-row"><div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:0.88rem;color:var(--text);">${cat}</span><span style="font-size:0.88rem;color:var(--green2);">${gFmt(amt)}</span></div>
+        <div class="g-prog-bg"><div class="g-prog-fill g-prog-ok" style="width:${p}%"></div></div>
+      </div></div>`;
+    });
+    html += `</div>`;
+  }
+  document.getElementById('g-overview').innerHTML = html;
+}
+
+function gastoAdd(key) {
+  const desc = document.getElementById('gdesc-' + key).value.trim();
+  const cat = document.getElementById('gcat-' + key).value;
+  const amt = parseFloat(document.getElementById('gamt-' + key).value);
+  if (!desc || !amt || isNaN(amt) || amt <= 0) return;
+  gastosData[key].push({ id: gastosIdCounter++, desc: desc, cat: cat, amt: amt });
+  saveGastos();
+  renderGastosMonth(key);
+  renderGastosOverview();
+  renderGastosConfig();
+}
+function gastoDel(key, id) {
+  gastosData[key] = gastosData[key].filter(e => e.id !== id);
+  saveGastos();
+  renderGastosMonth(key);
+  renderGastosOverview();
+  renderGastosConfig();
+}
+
+function showGastos(name, btn) {
+  document.querySelectorAll('.gastos-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.gastos-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('g-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ════════ SUPABASE SYNC ════════ */
+const SB = {
+  url: 'https://odohpxynmoxgmatflfrn.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kb2hweHlubW94Z21hdGZsZnJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNzY5ODksImV4cCI6MjA5Mjk1Mjk4OX0.wV_fDBLoCeQGmUYn8lhRUA01jFTcsYqef7n4aNV05l4',
+  table: 'sync_kv'
+};
+const SB_KEYS = ['ja_pesos','ja_mediciones','ja_semanas','unas_v2','plan_compra_v2','apuesta_history','gastos_v2'];
+
+function sbDot(state) {
+  const el = document.getElementById('sync-dot');
+  if (!el) return;
+  const cfg = {
+    idle:    { color: 'var(--text-muted)', title: 'Sin cambios' },
+    syncing: { color: 'var(--gold)',       title: 'Sincronizando…' },
+    ok:      { color: 'var(--green)',      title: 'Sincronizado ✓' },
+    error:   { color: '#e07a5f',           title: 'Sin conexión con Supabase' }
+  };
+  const s = cfg[state] || cfg.idle;
+  el.style.color = s.color;
+  el.title = s.title;
+}
+
+async function sbPush(key, value) {
+  try {
+    sbDot('syncing');
+    const r = await fetch(`${SB.url}/rest/v1/${SB.table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB.key,
+        'Authorization': `Bearer ${SB.key}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() })
+    });
+    sbDot(r.ok ? 'ok' : 'error');
+  } catch { sbDot('error'); }
+}
+
+async function sbPullAll() {
+  sbDot('syncing');
+  try {
+    const r = await fetch(`${SB.url}/rest/v1/${SB.table}?select=key,value`, {
+      headers: { 'apikey': SB.key, 'Authorization': `Bearer ${SB.key}` }
+    });
+    if (!r.ok) { sbDot('error'); return; }
+    const rows = await r.json();
+    const remote = {};
+    rows.forEach(row => remote[row.key] = row.value);
+
+    const changed = [];
+    SB_KEYS.forEach(k => {
+      if (remote[k] === undefined) return;
+      const remoteStr = JSON.stringify(remote[k]);
+      if (localStorage.getItem(k) !== remoteStr) {
+        localStorage.setItem(k, remoteStr);
+        changed.push(k);
+      }
+    });
+    if (changed.length) sbApply(changed);
+    sbDot('ok');
+  } catch { sbDot('error'); }
+}
+
+function sbApply(keys) {
+  keys.forEach(k => {
+    const v = JSON.parse(localStorage.getItem(k));
+    if (k === 'ja_pesos') {
+      pesos = v || [];
+      renderHistorial();
+      if (document.getElementById('tracker-resumen').classList.contains('active')) renderResumen();
+    }
+    if (k === 'ja_mediciones') {
+      mediciones = v || [];
+      renderHistorial();
+      if (document.getElementById('tracker-resumen').classList.contains('active')) renderResumen();
+    }
+    if (k === 'ja_semanas') { semanasHechas = v || []; renderPlan(); }
+    if (k === 'unas_v2') { unasState = v || { done: 0 }; renderUnas(); }
+    if (k === 'plan_compra_v2') loadShop();
+    if (k === 'apuesta_history') { apuestaHistory = v || []; renderApuestaHistory(); }
+    if (k === 'gastos_v2' && v) {
+      if (typeof v.ingreso === 'number') GASTOS_INGRESO = v.ingreso;
+      if (typeof v.colchon === 'number') GASTOS_COLCHON = v.colchon;
+      if (v.data) gastosData = v.data;
+      if (typeof v.idCounter === 'number') gastosIdCounter = v.idCounter;
+      renderGastosConfig();
+      GASTOS_MONTHS.forEach(m => renderGastosMonth(m.key));
+      renderGastosOverview();
+    }
+  });
+}
+
+/* ════════ INIT ════════ */
+loadShop();
+updateObjetivosBars();
+renderUnas();
+updateApuesta();
+renderApuestaHistory();
+loadGastos();
+renderGastosConfig();
+GASTOS_MONTHS.forEach(m => renderGastosMonth(m.key));
+renderGastosOverview();
+
+// Sync inicial (tras renderizar con datos locales para no bloquear)
+sbPullAll();
+// Sync automática cada 2 minutos
+setInterval(sbPullAll, 2 * 60 * 1000);
+</script>
+</body>
+</html>
